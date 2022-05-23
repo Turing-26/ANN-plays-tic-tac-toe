@@ -136,7 +136,7 @@ public:
         {
             for (int j = 0; j < rows; j++)
             {
-                res.at(j, i) = this->at(i, j);
+                res.at(i, j) = this->at(j, i);
             }
         }
         return res;

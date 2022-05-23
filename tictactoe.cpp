@@ -115,6 +115,4 @@ public:
 
 int main()
 {
-    TicTacToe t;
-    t.playGame();
 }
