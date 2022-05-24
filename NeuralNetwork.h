@@ -201,8 +201,8 @@ public:
         std::cout << "Done!";
     }
 
-    // std::vector<float> prediction()
-    // {
-    //     return valueMat.back().getVals();
-    // }
+    std::vector<float> prediction()
+    {
+        return valueMat.back().getVals();
+    }
 };
