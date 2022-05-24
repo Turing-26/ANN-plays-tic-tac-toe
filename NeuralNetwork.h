@@ -1,7 +1,7 @@
 #pragma once
-#include <fstream>
 #include "Matrix.h"
-// #include <bits/stdc++.h>
+#include "read.h"
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -16,20 +16,14 @@ float derSigmoid(float z) // argument z is the output of the sigmoid function
     return z * (1 - z);
 }
 
-float relU(float x)
+float tanH(float x)
 {
-    if (x < 0)
-        return 0;
-    else
-        return x;
+    return tanh(x);
 }
 
-float derRelu(float x)
+float dertanH(float x)
 {
-    if (x < 0)
-        return 0;
-    else
-        return 1;
+    return 1 - (tanh(x) * tanh(x));
 }
 
 class NeuralNetwork
@@ -38,8 +32,8 @@ class NeuralNetwork
     std::vector<Matrix> valueMat;
     std::vector<Matrix> weightMat;
     std::vector<Matrix> bias;
+    std::vector<vector<float>> input;
     std::vector<int> target;
-    float input[958][9];
     float learningRate;
 
 public:
@@ -60,7 +54,18 @@ public:
             this->bias.push_back(biasMat);
         }
 
-        valueMat.resize(topology.size());
+        // valueMat.resize(topology.size());
+        for (int i = 0; i < topology.size(); i++)
+        {
+            valueMat.push_back(Matrix(topology[i], 1));
+        }
+
+        input = readers::read();
+
+        for (int i = 0; i < input.size(); i++)
+        {
+            target.push_back(input[i].back());
+        }
     }
 
     Matrix feedForward(std::vector<float> in)
@@ -78,15 +83,15 @@ public:
             vals = vals.mult(weightMat[i]);
             vals = vals.add(bias[i]);
 
-            if (i == weightMat.size() - 1)
-                vals = vals.apply(sigmoid);
-            else
-                vals = vals.apply(relU);
+            // if (i == weightMat.size() - 1)
+            vals = vals.apply(sigmoid);
+            // else
+            //     vals = vals.apply(tanH);
         }
 
         valueMat[weightMat.size()] = vals;
 
-        return valueMat[-1];
+        return valueMat.back();
     }
 
     /*
@@ -105,19 +110,19 @@ public:
             errors.setVal(target[i], i);
         }
 
-        Matrix sub = valueMat[-1].neg(); // ch
+        Matrix sub = valueMat.back().neg(); // ch
         errors = errors.add(sub);
 
         for (int i = weightMat.size() - 1; i >= 0; i--)
         {
             Matrix trans = weightMat[i].trans();
             Matrix error = errors.mult(trans);
-            Matrix DOut = valueMat[i + 1];
+            // Matrix DOut = valueMat[i + 1];
 
-            if (i == weightMat.size())
-                Matrix DOut = valueMat[i + 1].apply(derSigmoid);
-            else
-                Matrix DOut = valueMat[i + 1].apply(derRelu);
+            // if (i == weightMat.size())
+            Matrix DOut = valueMat[i + 1].apply(derSigmoid);
+            // else
+            //     Matrix DOut = valueMat[i + 1].apply(dertanH);
 
             Matrix derror = errors.multEl(DOut);
             derror = derror.mult(learningRate);
@@ -133,59 +138,53 @@ public:
         return 1;
     }
 
-    void read()
-    {
-        ifstream data("tic-tac-toe.data");
-        string in;
+    // void read()
+    // {
+    //     ifstream data("tic-tac-toe.data");
+    //     string in;
 
-        for (int i = 0; i < 958; i++)
-        {
-            data >> in;
-            int l = 0;
-            for (int j = 0; j < 19; j++)
-            {
-                if (in[j] == 'x')
-                {
-                    input[i][l] = 1;
-                    l++;
-                }
-                else if (in[j] == 'o')
-                {
-                    input[i][l] = -1;
-                    l++;
-                }
-                else if (in[j] == 'b')
-                {
-                    input[i][l] = 0.01;
-                    l++;
-                }
-                else if (in[j] == 'p')
-                {
-                    target.push_back(1);
-                    break;
-                }
-                else if (in[j] == 'n')
-                {
-                    target.push_back(0);
-                    break;
-                }
-            }
-        }
-    }
+    //     for (int i = 0; i < 958; i++)
+    //     {
+    //         data >> in;
+    //         int l = 0;
+    //         for (int j = 0; j < 19; j++)
+    //         {
+    //             if (in[j] == 'x')
+    //             {
+    //                 input[i][l] = 1;
+    //                 l++;
+    //             }
+    //             else if (in[j] == 'o')
+    //             {
+    //                 input[i][l] = -1;
+    //                 l++;
+    //             }
+    //             else if (in[j] == 'b')
+    //             {
+    //                 input[i][l] = 0.01;
+    //                 l++;
+    //             }
+    //             else if (in[j] == 'p')
+    //             {
+    //                 target.push_back(1);
+    //                 break;
+    //             }
+    //             else if (in[j] == 'n')
+    //             {
+    //                 target.push_back(0);
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // }
 
     void train()
     {
         for (int i = 0; i < 958; i++)
         {
-            std::vector<float> in;
-            for (int j = 0; j < 9; j++)
-            {
-                in.push_back(input[i][j]);
-            }
-
             while (1)
             {
-                Matrix res = feedForward(in);
+                Matrix res = feedForward(input[i]);
 
                 if (res.at(0, 0) > 0.5)
                     break;
@@ -199,10 +198,11 @@ public:
                     break;
             }
         }
+        std::cout << "Done!";
     }
 
-    std::vector<float> prediction()
-    {
-        return valueMat[-1].getVals();
-    }
+    // std::vector<float> prediction()
+    // {
+    //     return valueMat.back().getVals();
+    // }
 };

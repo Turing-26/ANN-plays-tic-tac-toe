@@ -112,6 +112,7 @@ public:
                 res.at(i, j) = this->at(i, j) + val;
             }
         }
+        return res;
     }
 
     Matrix neg()

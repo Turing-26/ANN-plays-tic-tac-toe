@@ -115,4 +115,7 @@ public:
 
 int main()
 {
+    vector<int> topology = {9, 5, 1};
+    NeuralNetwork network(topology);
+    network.train();
 }
