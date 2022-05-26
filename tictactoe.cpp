@@ -28,12 +28,14 @@ public:
 
         for (int i = 0; i < 9; i++)
         {
-            if (temp[i] == (float)0.01)
+            if (board[i] == (float)0.01)
             {
                 temp[i] = 1;
                 Matrix res = n.feedForward(temp);
                 prob[i] = res.at(0, 0);
+                temp[i] = 0.01;
             }
+            cout << prob[i] << endl;
         }
 
         float max = 0;
@@ -49,6 +51,7 @@ public:
             if (max == prob[i])
                 index = i;
         }
+        cout << index << endl;
 
         return index;
     }
@@ -79,7 +82,7 @@ public:
 
         for (int i = 0; i < 7; i += 3)
         {
-            if ((board[i] != (float)0.01) && (board[i] == board[i + 1] == board[i + 2]))
+            if ((board[i] != (float)0.01) && (board[i] == board[i + 1] && board[i] == board[i + 2]))
             {
                 cout << "Player " << player << " wins\n";
                 return 1;
@@ -190,7 +193,7 @@ int main()
     vector<int> topology = {9, 5, 1};
     // vector<int> topology = {2, 3, 1};
 
-    NeuralNetwork network(topology);
+    NeuralNetwork network(topology, 0.01);
     TicTacToe tictactoe;
 
     network.train();

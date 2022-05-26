@@ -183,6 +183,12 @@ public:
         std::cout << res.at(0, 0) << endl;
         res = feedForward(input[900]);
         std::cout << res.at(0, 0) << endl;
+        res = feedForward(input[857]);
+        std::cout << res.at(0, 0) << endl;
+        res = feedForward(input[666]);
+        std::cout << res.at(0, 0) << endl;
+        res = feedForward(input[126]);
+        std::cout << res.at(0, 0) << endl;
     }
 
     void displayIn()
