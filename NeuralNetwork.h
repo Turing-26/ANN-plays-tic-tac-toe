@@ -2,6 +2,7 @@
 #include "Matrix.h"
 #include "read.h"
 #include <bits/stdc++.h>
+#include <iostream>
 
 using namespace std;
 
@@ -33,12 +34,13 @@ class NeuralNetwork
     std::vector<Matrix> weightMat;
     std::vector<Matrix> bias;
     std::vector<vector<float>> input;
-    std::vector<int> target;
+    std::vector<vector<float>> target;
     float learningRate;
 
 public:
     NeuralNetwork(std::vector<int> top, float lr = 0.1) : topology(top), weightMat({}), valueMat({}), bias({}), learningRate(lr)
     {
+        srand(time(0));
         for (int i = 0; i < topology.size() - 1; i++)
         {
             Matrix weightMat(topology[i], topology[i + 1]);
@@ -47,24 +49,26 @@ public:
 
             this->weightMat.push_back(weightMat);
 
-            Matrix biasMat(topology[1], topology[i + 1]);
+            Matrix biasMat(1, topology[i + 1]);
             biasMat = biasMat.apply([](const float)
                                     { return (float)rand() / (float)RAND_MAX * 2 - 1; });
 
             this->bias.push_back(biasMat);
         }
 
-        // valueMat.resize(topology.size());
-        for (int i = 0; i < topology.size(); i++)
-        {
-            valueMat.push_back(Matrix(topology[i], 1));
-        }
+        valueMat.resize(topology.size());
+        // for (int i = 0; i < topology.size(); i++)
+        // {
+        //     valueMat.push_back(Matrix(topology[i], 1));
+        // }
 
         input = readers::read();
+        target.resize(input.size());
 
         for (int i = 0; i < input.size(); i++)
         {
-            target.push_back(input[i].back());
+            target[i].push_back(input[i].back());
+            input[i].pop_back();
         }
     }
 
@@ -72,9 +76,7 @@ public:
     {
         Matrix vals(1, in.size());
         for (int i = 0; i < in.size(); i++)
-        {
             vals.setVal(in[i], i);
-        }
 
         // Feed forward to next layers
         for (int i = 0; i < weightMat.size(); i++)
@@ -99,7 +101,7 @@ public:
     (d/dx)(error) = (+/-) value; // change weight by a small amount determined by the learning rate
     */
 
-    bool backPropogate(std::vector<int> target)
+    bool backPropogate(std::vector<float> target)
     {
         if (target.size() != topology.back())
             return 0;
@@ -109,14 +111,13 @@ public:
         {
             errors.setVal(target[i], i);
         }
-
         Matrix sub = valueMat.back().neg(); // ch
         errors = errors.add(sub);
 
         for (int i = weightMat.size() - 1; i >= 0; i--)
         {
-            Matrix trans = weightMat[i].trans();
-            Matrix error = errors.mult(trans);
+            Matrix transpose = weightMat[i].trans();
+            Matrix error = errors.mult(transpose);
             // Matrix DOut = valueMat[i + 1];
 
             // if (i == weightMat.size())
@@ -138,71 +139,73 @@ public:
         return 1;
     }
 
-    // void read()
-    // {
-    //     ifstream data("tic-tac-toe.data");
-    //     string in;
+    std::vector<float> prediction()
+    {
+        return valueMat.back().getVals();
+    }
 
-    //     for (int i = 0; i < 958; i++)
+    // void out()
+    // {
+    //     for (int i = 0; i < input.size(); i++)
     //     {
-    //         data >> in;
-    //         int l = 0;
-    //         for (int j = 0; j < 19; j++)
-    //         {
-    //             if (in[j] == 'x')
-    //             {
-    //                 input[i][l] = 1;
-    //                 l++;
-    //             }
-    //             else if (in[j] == 'o')
-    //             {
-    //                 input[i][l] = -1;
-    //                 l++;
-    //             }
-    //             else if (in[j] == 'b')
-    //             {
-    //                 input[i][l] = 0.01;
-    //                 l++;
-    //             }
-    //             else if (in[j] == 'p')
-    //             {
-    //                 target.push_back(1);
-    //                 break;
-    //             }
-    //             else if (in[j] == 'n')
-    //             {
-    //                 target.push_back(0);
-    //                 break;
-    //             }
-    //         }
+    //         feedForward(input[i]);
+    //         vector<float> pred = prediction();
+    //         cout << i << " " << pred[i] << endl;
     //     }
     // }
 
     void train()
     {
-        for (int i = 0; i < 958; i++)
+        for (int i = 0; i < 100000; i++)
         {
-            while (1)
-            {
-                Matrix res = feedForward(input[i]);
-
-                if (res.at(0, 0) > 0.5)
-                    break;
-                else if (target[i] == 1)
-                {
-                    std::vector<int> tar;
-                    tar.push_back(target[i]);
-                    backPropogate(tar);
-                }
-                else
-                    break;
-            }
+            int in = rand() % 958;
+            feedForward(input[in]);
+            backPropogate(target[in]);
+            // while (1)
+            // {
+            //     Matrix res = feedForward(input[i]);
+            //     cout << i << " " << res.at(0, 0) << endl;
+            //     if (res.at(0, 0) <= 0.8 && target[i][0] == 1)
+            //     {
+            //         backPropogate(target[i]);
+            //     }
+            //     else if (target[i][0] == 0 && res.at(0, 0) >= 0.2)
+            //     {
+            //         backPropogate(target[i]);
+            //     }
+            //     else
+            //         break;
+            // }
         }
-        std::cout << "Done!";
+
+        std::cout << "Done!\n";
+        Matrix res = feedForward(input[260]);
+        std::cout << res.at(0, 0) << endl;
+        res = feedForward(input[900]);
+        std::cout << res.at(0, 0) << endl;
     }
 
-    std::vector<float> prediction()
+    void displayIn()
     {
-        return valueMat.back().getVals();
+        for (int i = 0; i < input.size(); i++)
+        {
+            for (int j = 0; j < input[i].size(); j++)
+            {
+                cout << input[i][j] << ",";
+            }
+            cout << endl;
+        }
+    }
+
+    void displayOut()
+    {
+        for (int i = 0; i < target.size(); i++)
+        {
+            for (int j = 0; j < target[i].size(); j++)
+            {
+                cout << target[i][j] << ",";
+            }
+            cout << endl;
+        }
     }
 };

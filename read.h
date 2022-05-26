@@ -66,7 +66,7 @@ namespace readers
                 else if (dataStr[i][j] == 'p')
                     data[i][j] = 1;
                 else if (dataStr[i][j] == 'n')
-                    data[i][j] = -1;
+                    data[i][j] = 0;
             }
         }
 

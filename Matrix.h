@@ -10,6 +10,7 @@ class Matrix
     std::vector<float> values;
 
 public:
+    Matrix() : rows(0), cols(0), values({}) {}
     Matrix(int row, int col) : rows(row), cols(col), values({})
     {
         values.resize(cols * rows, 0);
