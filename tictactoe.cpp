@@ -23,14 +23,14 @@ public:
     int aiMove(NeuralNetwork n)
     {
         vector<float> temp = board;
-        vector<float> prob(9, 0);
+        vector<float> prob(9, 1);
         Matrix res;
 
         for (int i = 0; i < 9; i++)
         {
             if (board[i] == (float)0.01)
             {
-                temp[i] = 1;
+                temp[i] = -1;
                 Matrix res = n.feedForward(temp);
                 prob[i] = res.at(0, 0);
                 temp[i] = 0.01;
@@ -38,17 +38,17 @@ public:
             cout << prob[i] << endl;
         }
 
-        float max = 0;
+        float min = 1;
         for (int i = 0; i < 9; i++)
         {
-            if (prob[i] > max)
-                max = prob[i];
+            if (prob[i] < min)
+                min = prob[i];
         }
 
         int index;
         for (int i = 0; i < 9; i++)
         {
-            if (max == prob[i])
+            if (min == prob[i])
                 index = i;
         }
         cout << index << endl;
@@ -56,7 +56,7 @@ public:
         return index;
     }
 
-    void displayGrid()
+    void displayBoard()
     {
         for (int i = 0; i < 9; i++)
         {
@@ -123,7 +123,7 @@ public:
     {
         while (1)
         {
-            displayGrid();
+            displayBoard();
             int pos;
 
             cout << "Player " << player << "'s"
@@ -141,7 +141,7 @@ public:
 
             if (endGame())
             {
-                displayGrid();
+                displayBoard();
                 break;
             }
 
@@ -153,7 +153,7 @@ public:
     {
         while (1)
         {
-            displayGrid();
+            displayBoard();
             int pos;
 
             if (player == 1)
@@ -178,7 +178,7 @@ public:
 
             if (endGame())
             {
-                displayGrid();
+                displayBoard();
                 break;
             }
 

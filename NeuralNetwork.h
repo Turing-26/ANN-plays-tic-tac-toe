@@ -139,21 +139,6 @@ public:
         return 1;
     }
 
-    std::vector<float> prediction()
-    {
-        return valueMat.back().getVals();
-    }
-
-    // void out()
-    // {
-    //     for (int i = 0; i < input.size(); i++)
-    //     {
-    //         feedForward(input[i]);
-    //         vector<float> pred = prediction();
-    //         cout << i << " " << pred[i] << endl;
-    //     }
-    // }
-
     void train()
     {
         for (int i = 0; i < 100000; i++)
@@ -161,21 +146,6 @@ public:
             int in = rand() % 958;
             feedForward(input[in]);
             backPropogate(target[in]);
-            // while (1)
-            // {
-            //     Matrix res = feedForward(input[i]);
-            //     cout << i << " " << res.at(0, 0) << endl;
-            //     if (res.at(0, 0) <= 0.8 && target[i][0] == 1)
-            //     {
-            //         backPropogate(target[i]);
-            //     }
-            //     else if (target[i][0] == 0 && res.at(0, 0) >= 0.2)
-            //     {
-            //         backPropogate(target[i]);
-            //     }
-            //     else
-            //         break;
-            // }
         }
 
         std::cout << "Done!\n";
