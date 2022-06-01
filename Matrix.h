@@ -1,3 +1,10 @@
+/**
+ * @file Matrix.hame
+ * @brief created a matrix data type to make calculations easier
+ * @date 2022-05-26
+ *
+ */
+
 #pragma once
 #include <vector>
 #include <cmath>
@@ -31,6 +38,12 @@ public:
         return values[row * cols + col];
     }
 
+    /**
+     * @brief multies the matrixes one called by the function and one passed in the parameter.
+     * @param mat2
+     * @return Matrix
+     */
+
     Matrix mult(Matrix &mat2)
     {
         if (cols == mat2.rows)
@@ -51,6 +64,13 @@ public:
         }
         return *this;
     }
+
+    /**
+     * @brief multiplies our desired matrix with the float value passed.
+     *
+     * @param val
+     * @return Matrix
+     */
 
     Matrix mult(float val)
     {
@@ -84,6 +104,13 @@ public:
         return *this;
     }
 
+    /**
+     * @brief add our desired two matrixes one called by the function and on passed to the function.
+     *
+     * @param mat2
+     * @return Matrix
+     */
+
     Matrix add(Matrix &mat2)
     {
         if (rows == mat2.rows && cols == mat2.cols)
@@ -102,6 +129,13 @@ public:
         return *this;
     }
 
+    /**
+     * @brief it add a float passed value in our matrix .
+     *
+     * @param val
+     * @return Matrix
+     */
+
     Matrix add(float val)
     {
         Matrix res(rows, cols);
@@ -116,6 +150,11 @@ public:
         return res;
     }
 
+    /**
+     * @brief it turns all the vales of a matrix into it -(ve) counterparts.
+     *
+     * @return Matrix
+     */
     Matrix neg()
     {
         Matrix res(rows, cols);
@@ -130,6 +169,12 @@ public:
         return res;
     }
 
+    /**
+     * @brief it takes the transpose of the matrix that calls the function.
+     *
+     * @return Matrix
+     */
+
     Matrix trans()
     {
         Matrix res(cols, rows);
@@ -143,6 +188,10 @@ public:
         }
         return res;
     }
+
+/**
+ * @brief applies the function passed into the parameter.
+ */
 
     Matrix apply(float (*func)(const float))
     {

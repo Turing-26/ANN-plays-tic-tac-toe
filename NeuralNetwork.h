@@ -1,10 +1,21 @@
+/**
+ * @file NeuralNetwork.h
+ * @brief Neural network class
+ * @date 2022-05-26
+ *
+ */
 #pragma once
 #include "Matrix.h"
 #include "read.h"
 #include <bits/stdc++.h>
-#include <iostream>
 
 using namespace std;
+
+/**
+ * @brief activation function .
+ *
+ * @param z input value coming into the node.
+ */
 
 float sigmoid(float z)
 {
@@ -12,20 +23,30 @@ float sigmoid(float z)
     return s;
 }
 
-float derSigmoid(float z) // argument z is the output of the sigmoid function
+/**
+ * @brief deravative used for error calculation for back propogation.
+ *
+ * @param z argument z is the output of the node.
+ */
+
+float derSigmoid(float z)
 {
     return z * (1 - z);
 }
 
-float tanH(float x)
-{
-    return tanh(x);
-}
+// float tanH(float x)
+// {
+//     return tanh(x);
+// }
 
-float dertanH(float x)
-{
-    return 1 - (tanh(x) * tanh(x));
-}
+// float dertanH(float x)
+// {
+//     return 1 - (tanh(x) * tanh(x));
+// }
+
+/**
+ * @brief class that helps learing of ai
+ */
 
 class NeuralNetwork
 {
@@ -40,7 +61,7 @@ class NeuralNetwork
 public:
     NeuralNetwork(std::vector<int> top, float lr = 0.1) : topology(top), weightMat({}), valueMat({}), bias({}), learningRate(lr)
     {
-        srand(time(0));
+
         for (int i = 0; i < topology.size() - 1; i++)
         {
             Matrix weightMat(topology[i], topology[i + 1]);
@@ -72,6 +93,14 @@ public:
         }
     }
 
+    /**
+     * @brief gets the output value for thee sets of
+     *        input indicating the current status of the board.
+     *
+     * @param in a vecctor showing all nine positions in a board.
+     * @return Matrix
+     */
+
     Matrix feedForward(std::vector<float> in)
     {
         Matrix vals(1, in.size());
@@ -100,6 +129,12 @@ public:
     error = realVal - output; // error is minimized on every iteration to get it as close as possible to zero
     (d/dx)(error) = (+/-) value; // change weight by a small amount determined by the learning rate
     */
+
+    /**
+     * @brief corrects our weights acooriding to desired output value.
+     *
+     * @param target a desired output value
+     */
 
     bool backPropogate(std::vector<float> target)
     {
@@ -138,9 +173,14 @@ public:
 
         return 1;
     }
+    /**
+     * @brief training our neural network to correctly identify patterns.
+     */
 
     void train()
     {
+        std::cout << "Training started\n";
+
         for (int i = 0; i < 100000; i++)
         {
             int in = rand() % 958;
@@ -148,17 +188,10 @@ public:
             backPropogate(target[in]);
         }
 
+        // std::cout << feedForward(input[126]).at(0, 0) << endl;
+        // std::cout << feedForward(input[896]).at(0, 0) << endl;
+        // std::cout << feedForward(input[233]).at(0, 0) << endl;
         std::cout << "Done!\n";
-        Matrix res = feedForward(input[260]);
-        std::cout << res.at(0, 0) << endl;
-        res = feedForward(input[900]);
-        std::cout << res.at(0, 0) << endl;
-        res = feedForward(input[857]);
-        std::cout << res.at(0, 0) << endl;
-        res = feedForward(input[666]);
-        std::cout << res.at(0, 0) << endl;
-        res = feedForward(input[126]);
-        std::cout << res.at(0, 0) << endl;
     }
 
     void displayIn()

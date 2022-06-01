@@ -1,5 +1,14 @@
-#include <iostream>
+/**
+ * @file tictactoe.cpp
+ * @author Sarim Ahmad(2021572), Ahmed Ali Abid(2021065), Mohommad Omar Khan(2021305)
+ * @brief This project consistes of of a neural network that is trained to play tic-tac-toe with a human
+ * @version 0.1(beta)
+ * @date 2022-05-26
+ *
+ */
+
 #include "NeuralNetwork.h"
+#include <iostream>
 
 using namespace std;
 
@@ -10,6 +19,9 @@ class TicTacToe
     vector<float> board;
 
 public:
+    /**
+     * @brief Construct a new Tic Tac Toe object
+     */
     TicTacToe()
     {
         player = 1;
@@ -20,6 +32,9 @@ public:
         }
     }
 
+    /**
+     * @brief it helps deciding the index on which the Ai will play the game .
+     */
     int aiMove(NeuralNetwork n)
     {
         vector<float> temp = board;
@@ -33,9 +48,10 @@ public:
                 temp[i] = -1;
                 Matrix res = n.feedForward(temp);
                 prob[i] = res.at(0, 0);
+                cout << res.at(0, 0) << endl;
                 temp[i] = 0.01;
             }
-            cout << prob[i] << endl;
+            // cout << prob[i] << endl;
         }
 
         float min = 1;
@@ -56,21 +72,38 @@ public:
         return index;
     }
 
+    /**
+     * @brief it displays a board on the console for the player to play the game.
+     */
     void displayBoard()
     {
         for (int i = 0; i < 9; i++)
         {
             if ((i + 1) % 3 == 0)
             {
-                board[i] == 0.01 ? cout << " " << endl : cout << board[i] << endl;
+                if (board[i] == 0.01f)
+                    cout << " " << endl;
+                if (board[i] == (float)1)
+                    cout << "X" << endl;
+                if (board[i] == float(-1))
+                    cout << "O" << endl;
             }
             else
             {
-                board[i] == 0.01 ? cout << " |" : cout << board[i] << "|";
+                if (board[i] == 0.01f)
+                    cout << " |";
+                if (board[i] == (float)1)
+                    cout << "X|";
+                if (board[i] == float(-1))
+                    cout << "O|";
             }
         }
     }
 
+    /**
+     * @brief it checks the conditions of winnig and draw of the
+     *        game and tells us which plaer has won the game
+     */
     bool endGame()
     {
         int filled = 0;
@@ -119,6 +152,9 @@ public:
         return 0;
     }
 
+    /**
+     * @brief it starts the game between two real players without the use of ai.
+     */
     void playGame()
     {
         while (1)
@@ -149,6 +185,9 @@ public:
         }
     }
 
+    /**
+     * @brief it launches a game in which our real player plays with the AI.
+     */
     void playWithAi(NeuralNetwork n)
     {
         while (1)
@@ -189,9 +228,8 @@ public:
 
 int main()
 {
-    srand(time(NULL));
+    srand(time(NULL)); // to generate random numbers
     vector<int> topology = {9, 5, 1};
-    // vector<int> topology = {2, 3, 1};
 
     NeuralNetwork network(topology, 0.01);
     TicTacToe tictactoe;
@@ -199,40 +237,6 @@ int main()
     network.train();
     // tictactoe.playGame();
     tictactoe.playWithAi(network);
-    // network.out();
-    // network.displayOut();
 
-    // vector<vector<float>> in{
-    //     {0.0f, 0.0f},
-    //     {1.0f, 1.0f},
-    //     {0.0f, 1.0f},
-    //     {1.0f, 0.0f},
-    // };
-
-    // vector<vector<float>> out{
-    //     {0.0f},
-    //     {0.0f},
-    //     {1.0f},
-    //     {1.0f},
-    // };
-
-    // int epoch = 100000;
-    // for (int i = 0; i < epoch; i++)
-    // {
-    //     int index = rand() % 4;
-    //     Matrix res = network.feedForward(in[index]);
-    //     cout << res.at(0, 0) << endl;
-    //     network.backPropogate(out[index]);
-    // }
-
-    // cout << endl;
-
-    // for (auto i : in)
-    // {
-    //     network.feedForward(i);
-    //     auto pred = network.prediction();
-    //     cout << i[0] << "," << i[1] << " -> " << pred[0] << endl;
-    // }
-
-    // return 0;
+    return 0;
 }

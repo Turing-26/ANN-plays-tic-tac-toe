@@ -1,8 +1,18 @@
+/**
+ * @file read.h
+ * @brief
+ * @version 0.1
+ * @date 2022-05-26
+ *
+ */
+
 #pragma once
 #include <fstream>
 #include <vector>
 
-// using namespace std;
+/**
+ * @brief it read the file provided to train the AI system.
+ */
 
 namespace readers
 {
